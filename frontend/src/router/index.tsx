@@ -16,8 +16,9 @@ const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 
 const ContactPage = lazy(() => import("../pages/ContactPage"));
 
-// Phase 2 stubs (implemented in next phase)
 const CheckoutPage = lazy(() => import("../pages/CheckoutPage"));
+const OrdersPage = lazy(() => import("../pages/OrdersPage"));
+const OrderDetailPage = lazy(() => import("../pages/OrderDetailPage"));
 const UserProfilePage = lazy(() => import("../pages/UserProfilePage"));
 const AdminDashboardPage = lazy(() => import("../pages/AdminDashboardPage"));
 
@@ -61,6 +62,22 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <SuspenseWrapper><CheckoutPage /></SuspenseWrapper>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "orders",
+        element: (
+          <ProtectedRoute>
+            <SuspenseWrapper><OrdersPage /></SuspenseWrapper>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "orders/:id",
+        element: (
+          <ProtectedRoute>
+            <SuspenseWrapper><OrderDetailPage /></SuspenseWrapper>
           </ProtectedRoute>
         ),
       },

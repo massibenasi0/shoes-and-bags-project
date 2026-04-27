@@ -18,35 +18,76 @@ const ProductListPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState<Category[]>([]);
 
+  // Resolve category: accept both ?category_id=UUID and ?category=slug
+  const slugParam = searchParams.get("category");
+  const idParam = searchParams.get("category_id");
+
+  const resolvedCategoryId = idParam
+    ?? (slugParam && categories.length > 0
+      ? categories.find((c) => c.slug === slugParam)?.id ?? undefined
+      : undefined);
+
+  const activeCategory = categories.find(
+    (c) => c.id === resolvedCategoryId || c.slug === slugParam
+  );
+
   const [filters, setFilters] = useState<ProductFilters>({
-    category_id: searchParams.get("category_id") ?? undefined,
+    category_id: idParam ?? undefined,
     search: searchParams.get("search") ?? undefined,
     sort_by: (searchParams.get("sort_by") as ProductFilters["sort_by"]) ?? undefined,
     page: Number(searchParams.get("page") ?? 1),
     page_size: 12,
   });
 
+  // Load categories once
   useEffect(() => {
     categoriesApi.list().then((r) => setCategories(r.data));
   }, []);
 
+  // Re-apply category_id once categories are available (for slug-based URLs)
+  useEffect(() => {
+    if (slugParam && categories.length > 0) {
+      const cat = categories.find((c) => c.slug === slugParam);
+      if (cat) {
+        setFilters((prev) => ({ ...prev, category_id: cat.id, page: 1 }));
+      }
+    }
+  }, [slugParam, categories]);
+
   useEffect(() => {
     dispatch(fetchProducts(filters));
-    // Sync filters to URL
     const params: Record<string, string> = {};
     if (filters.category_id) params.category_id = filters.category_id;
+    if (slugParam) params.category = slugParam;
     if (filters.search) params.search = filters.search;
     if (filters.sort_by) params.sort_by = filters.sort_by;
     if (filters.page && filters.page > 1) params.page = String(filters.page);
     setSearchParams(params, { replace: true });
-  }, [filters, dispatch, setSearchParams]);
+  }, [filters, dispatch, setSearchParams, slugParam]);
 
   const updateFilters = useCallback((updated: Partial<ProductFilters>) => {
     setFilters((prev) => ({ ...prev, ...updated, page: 1 }));
   }, []);
 
+  const pageTitle = activeCategory
+    ? activeCategory.name
+    : t("product.filters");
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      {/* Page title when filtered by category */}
+      {activeCategory && (
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            {activeCategory.name}
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {activeCategory.description}
+          </p>
+        </div>
+      )}
+
       {/* Search + Sort bar */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="flex-1">
@@ -69,7 +110,7 @@ const ProductListPage: React.FC = () => {
       </div>
 
       <div className="flex gap-8">
-        {/* Filter sidebar — hidden on mobile */}
+        {/* Filter sidebar */}
         <div className="hidden md:block w-56 flex-shrink-0">
           <ProductFilter
             filters={filters}
@@ -82,7 +123,7 @@ const ProductListPage: React.FC = () => {
         <div className="flex-1 min-w-0">
           {!loading && list && (
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              {list.total} products found
+              {list.total} {list.total === 1 ? "product" : "products"} found
             </p>
           )}
           <ProductGrid products={list?.items ?? []} loading={loading} />

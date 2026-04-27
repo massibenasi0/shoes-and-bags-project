@@ -1,8 +1,5 @@
 version: "3.8"
 
-# Phase 1 compose — PostgreSQL + Backend + Frontend
-# Phase 2 will add: rabbitmq, celery_worker
-
 services:
   db:
     image: postgres:16-alpine
@@ -20,6 +17,20 @@ services:
       timeout: 5s
       retries: 10
 
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   backend:
     build:
       context: ./backend
@@ -30,9 +41,12 @@ services:
       - ./backend/.env
     environment:
       DATABASE_URL: postgresql://shoesbags:shoesbags@db:5432/shoesbags
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//
       CORS_ORIGINS: "http://localhost:3000,http://localhost:5173"
     depends_on:
       db:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     command: >
       sh -c "
@@ -40,6 +54,24 @@ services:
         python -m app.seed &&
         uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
       "
+    volumes:
+      - ./backend:/app
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://shoesbags:shoesbags@db:5432/shoesbags
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    command: celery -A app.worker.celery_app worker --loglevel=info -Q emails
     volumes:
       - ./backend:/app
 

@@ -22,18 +22,19 @@ E-commerce platform for shoes and bags built with FastAPI (Python) + React + Pos
 
 ---
 
-## Phase 2 — Commerce 🔄 Next
+## Phase 2 — Commerce ✅ Done
 
 **Goal:** Complete the full buying flow from cart to confirmed order with payments.
 
-### What will be built
+### What was built
 - **Cart page:** Full UI with quantity editing and item removal
 - **Checkout:** Multi-step form — shipping address → payment method → confirmation
-- **Stripe payments:** Pay with card (sandbox), handles failed payments
-- **Offline payment:** Bank transfer option, admin approves or rejects manually
-- **Orders:** Create order, view order history, order detail page
-- **Email notifications:** Automatic email on order confirmation and payment update
+- **Stripe payments:** Pay with card (sandbox), handles failed payments via webhook
+- **Offline payment:** Bank transfer option, admin approves or rejects via API
+- **Orders:** Create order, view order history (`/orders`), order detail page (`/orders/:id`)
+- **Email notifications:** Automatic email on order confirmation and payment status update
 - **Async queues:** Celery + RabbitMQ for background email sending
+- **Docker:** Updated `docker-compose.yml` with RabbitMQ + Celery worker services
 
 ---
 

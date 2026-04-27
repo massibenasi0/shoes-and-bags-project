@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, categories, products
+from app.routers import auth, categories, orders, payments, products
 
 app = FastAPI(
     title="ShoesBags API",
-    version="1.0.0",
+    version="2.0.0",
     description="E-commerce REST API for shoes and bags",
 )
 
@@ -21,6 +21,8 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(categories.router)
 app.include_router(products.router)
+app.include_router(orders.router)
+app.include_router(payments.router)
 
 
 @app.get("/api/health", tags=["health"])

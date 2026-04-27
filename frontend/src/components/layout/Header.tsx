@@ -106,6 +106,9 @@ export const Header: React.FC = () => {
                     {t("nav.admin")}
                   </Link>
                 )}
+                <Link to="/orders" className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                  {t("orders.title")}
+                </Link>
                 <Link to="/profile" className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
                   {user?.full_name?.split(" ")[0]}
                 </Link>
@@ -148,10 +151,12 @@ export const Header: React.FC = () => {
         {mobileOpen && (
           <div className="md:hidden border-t border-gray-200 dark:border-gray-700 py-4 space-y-3">
             <NavLink to="/" end className={navLinkClass} onClick={() => setMobileOpen(false)}>{t("nav.home")}</NavLink>
-            <NavLink to="/products" className={navLinkClass} onClick={() => setMobileOpen(false)}>{t("nav.shoes")}</NavLink>
+            <NavLink to="/products?category=shoes" className={navLinkClass} onClick={() => setMobileOpen(false)}>{t("nav.shoes")}</NavLink>
+            <NavLink to="/products?category=bags" className={navLinkClass} onClick={() => setMobileOpen(false)}>{t("nav.bags")}</NavLink>
             <NavLink to="/contact" className={navLinkClass} onClick={() => setMobileOpen(false)}>{t("nav.contact")}</NavLink>
             {isAuthenticated ? (
               <>
+                <Link to="/orders" className="block text-sm text-gray-700 dark:text-gray-300" onClick={() => setMobileOpen(false)}>{t("orders.title")}</Link>
                 <Link to="/profile" className="block text-sm text-gray-700 dark:text-gray-300" onClick={() => setMobileOpen(false)}>{t("nav.profile")}</Link>
                 {user?.role === "admin" && (
                   <Link to="/admin" className="block text-sm text-gray-700 dark:text-gray-300" onClick={() => setMobileOpen(false)}>{t("nav.admin")}</Link>

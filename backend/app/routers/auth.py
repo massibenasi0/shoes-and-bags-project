@@ -14,7 +14,7 @@ from app.core.security import (
 )
 from app.database import get_db
 from app.models.user import User, UserRole
-from app.schemas.user import TokenRefresh, TokenResponse, UserCreate, UserLogin, UserResponse
+from app.schemas.user import TokenRefresh, TokenResponse, UserCreate, UserLogin, UserResponse, UserUpdate
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 

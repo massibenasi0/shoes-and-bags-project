@@ -18,18 +18,8 @@ const ProductListPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Resolve category: accept both ?category_id=UUID and ?category=slug
   const slugParam = searchParams.get("category");
   const idParam = searchParams.get("category_id");
-
-  const resolvedCategoryId = idParam
-    ?? (slugParam && categories.length > 0
-      ? categories.find((c) => c.slug === slugParam)?.id ?? undefined
-      : undefined);
-
-  const activeCategory = categories.find(
-    (c) => c.id === resolvedCategoryId || c.slug === slugParam
-  );
 
   const [filters, setFilters] = useState<ProductFilters>({
     category_id: idParam ?? undefined,
@@ -44,18 +34,24 @@ const ProductListPage: React.FC = () => {
     categoriesApi.list().then((r) => setCategories(r.data));
   }, []);
 
-  // Re-apply category_id once categories are available (for slug-based URLs)
+  // Resolve slug → category_id once categories are loaded (only if no id in URL yet)
   useEffect(() => {
-    if (slugParam && categories.length > 0) {
+    if (slugParam && categories.length > 0 && !idParam) {
       const cat = categories.find((c) => c.slug === slugParam);
       if (cat) {
         setFilters((prev) => ({ ...prev, category_id: cat.id, page: 1 }));
       }
     }
-  }, [slugParam, categories]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories]); // only re-run when categories first load
 
+  // Fetch products whenever filters change
   useEffect(() => {
     dispatch(fetchProducts(filters));
+  }, [filters, dispatch]);
+
+  // Sync filters → URL (runs after fetch, no circular dependency)
+  useEffect(() => {
     const params: Record<string, string> = {};
     if (filters.category_id) params.category_id = filters.category_id;
     if (slugParam) params.category = slugParam;
@@ -63,15 +59,16 @@ const ProductListPage: React.FC = () => {
     if (filters.sort_by) params.sort_by = filters.sort_by;
     if (filters.page && filters.page > 1) params.page = String(filters.page);
     setSearchParams(params, { replace: true });
-  }, [filters, dispatch, setSearchParams, slugParam]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]); // intentionally exclude setSearchParams to prevent infinite loop
 
   const updateFilters = useCallback((updated: Partial<ProductFilters>) => {
     setFilters((prev) => ({ ...prev, ...updated, page: 1 }));
   }, []);
 
-  const pageTitle = activeCategory
-    ? activeCategory.name
-    : t("product.filters");
+  const activeCategory = categories.find(
+    (c) => c.id === filters.category_id || c.slug === slugParam
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

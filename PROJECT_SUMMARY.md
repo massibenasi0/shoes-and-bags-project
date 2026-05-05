@@ -36,6 +36,60 @@ ShoesBags is a full-stack e-commerce website for buying shoes and bags online. U
 
 ---
 
+## Requirements completed per phase
+
+### Phase 1 — Foundation
+
+| Requirement | Status |
+|-------------|--------|
+| REST API (FastAPI backend) | Done |
+| Backend in Python (not JS/Node) | Done |
+| User registration and login with JWT | Done |
+| Google OAuth2 social login | Done |
+| Product catalog with filters, search and pagination | Done |
+| Shopping cart saved in browser | Done |
+| Dark/Light theme toggle | Done |
+| English/Polish language switch | Done |
+| Database with 5 tables (users, products, categories, orders, payments) | Done |
+| Database migrations with Alembic | Done |
+| Auto-generated API documentation (Swagger) | Done |
+| Seeded database with 10 products and admin account | Done |
+
+---
+
+### Phase 2 — Commerce
+
+| Requirement | Status |
+|-------------|--------|
+| Electronic payment with Stripe (card, sandbox) | Done |
+| Failed payment handling (Stripe webhook) | Done |
+| Offline payment (bank transfer) option | Done |
+| Admin can approve or reject offline payments | Done |
+| Async message queue with RabbitMQ | Done |
+| Background email sending with Celery | Done |
+| Order confirmation email after payment | Done |
+| Payment status update email | Done |
+| Full checkout flow (shipping → payment → confirmation) | Done |
+| Order history page | Done |
+| Order detail page | Done |
+
+---
+
+### Phase 3 — Admin & Polish
+
+| Requirement | Status |
+|-------------|--------|
+| Admin dashboard with stats | Done |
+| Admin can add, edit and delete products | Done |
+| Admin can update order status | Done |
+| Admin can approve/reject offline payments from UI | Done |
+| User profile page with editable name | Done |
+| Backend automated tests with pytest (≥50% coverage) | Done |
+| Frontend automated tests with Jest (≥30% coverage) | Done |
+| CI/CD with GitHub Actions (runs on every push) | Done |
+
+---
+
 ## Project was built in 3 phases
 
 | Phase | What was built |

@@ -108,3 +108,20 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.put("/me", response_model=UserResponse)
+def update_me(
+    data: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if data.email and data.email != current_user.email:
+        if db.query(User).filter(User.email == data.email).first():
+            raise HTTPException(status_code=400, detail="Email already in use")
+        current_user.email = data.email
+    if data.full_name:
+        current_user.full_name = data.full_name
+    db.commit()
+    db.refresh(current_user)
+    return current_user

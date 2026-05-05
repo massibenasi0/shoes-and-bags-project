@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    name: Backend Tests (pytest)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: shoesbags
+          POSTGRES_PASSWORD: shoesbags
+          POSTGRES_DB: shoesbags_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run tests with coverage
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://shoesbags:shoesbags@localhost:5432/shoesbags_test
+          SECRET_KEY: ci-test-secret-key-32-characters-long
+          STRIPE_SECRET_KEY: ""
+          STRIPE_WEBHOOK_SECRET: ""
+          RABBITMQ_URL: ""
+          SMTP_USER: ""
+          SMTP_PASSWORD: ""
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=50 -v
+
+  frontend-tests:
+    name: Frontend Tests (Jest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run tests with coverage
+        working-directory: frontend
+        run: npm test -- --coverage --coverageThreshold='{"global":{"lines":30}}' --watchAll=false

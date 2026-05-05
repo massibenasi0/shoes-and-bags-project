@@ -147,6 +147,14 @@
     "amount": "Amount",
     "customer": "Customer",
     "date": "Date",
-    "action": "Action"
+    "action": "Action",
+    "all_orders": "All Orders",
+    "all_payments": "All Payments",
+    "update_status": "Update Status"
+  },
+  "profile": {
+    "member_since": "Member since",
+    "edit_name": "Edit Name",
+    "name_updated": "Name updated successfully"
   }
 }

@@ -147,6 +147,14 @@
     "amount": "Kwota",
     "customer": "Klient",
     "date": "Data",
-    "action": "Akcja"
+    "action": "Akcja",
+    "all_orders": "Wszystkie zamówienia",
+    "all_payments": "Wszystkie płatności",
+    "update_status": "Zmień status"
+  },
+  "profile": {
+    "member_since": "Członek od",
+    "edit_name": "Edytuj imię",
+    "name_updated": "Imię zaktualizowane pomyślnie"
   }
 }

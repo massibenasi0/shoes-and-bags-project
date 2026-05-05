@@ -38,17 +38,17 @@ E-commerce platform for shoes and bags built with FastAPI (Python) + React + Pos
 
 ---
 
-## Phase 3 — Admin & Polish 🔄 Planned
+## Phase 3 — Admin & Polish ✅ Done
 
 **Goal:** Full admin dashboard, automated tests, and production-ready setup.
 
-### What will be built
-- **Admin dashboard:** Manage products (add/edit/delete with image URL), manage orders, manage payments
-- **Offline payment manager:** Admin approves or rejects pending bank transfers
-- **User profile page:** View and edit personal info, see order history
-- **Automated tests:** Backend (pytest ≥50% coverage) + Frontend (Jest ≥30% coverage)
-- **CI/CD:** GitHub Actions runs tests automatically on every push
-- **Docker:** Final Docker Compose with all services (PostgreSQL, backend, frontend, RabbitMQ, Celery)
+### What was built
+- **Admin dashboard:** Stats bar + tabs for Products (add/edit/delete), Orders (status update), Payments (approve/reject offline)
+- **User profile page:** View name/email/role, edit name inline, see recent orders
+- **Profile update API:** `PUT /api/auth/me` — update full name
+- **Admin API:** `/api/admin/stats`, `/api/admin/orders`, `/api/admin/payments`, `/api/admin/products`
+- **Automated tests:** Backend pytest (orders + admin) + Frontend Jest (orderSlice)
+- **CI/CD:** GitHub Actions runs backend + frontend tests on every push to main
 
 ---
 
@@ -58,3 +58,11 @@ E-commerce platform for shoes and bags built with FastAPI (Python) + React + Pos
 |-------|-------|
 | Email | admin@shoesbags.com |
 | Password | admin123 |
+data base 
+We used SQLAlchemy as the ORM (Object Relational Mapper) to connect to 
+  ▎ PostgreSQL. The connection string is stored in a .env file and loaded via   
+  ▎ pydantic-settings. Each API request gets its own database session through a 
+  ▎ FastAPI dependency injection, and the database tables are managed with      
+  ▎ Alembic for migrations.
+RabbitMQ as the message broker. 
+backend/app/config.py
